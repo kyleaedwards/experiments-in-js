@@ -4,7 +4,7 @@
 
 An idiomatic use of generators for asynchronous code execution is to use it as it's own control device.
 
-The `yield` keyword pauses execution of the generator function, and will only resume after `.next()` is called. If we `yield` the execution of an asynchronous function, and then call `.next()` within the callback, then we can reduce [callback hell](https://www.scaler.com/topics/callback-hell-in-javascript/#callback-hell) by resuming execution after the `yield` statement.
+The `yield` keyword pauses execution of the generator function, defering back up to its caller, and will only resume the next time that `.next()` is called. If we `yield` the execution of an asynchronous function, and then call `.next()` within the callback, we leverage this deferral to reduce nested [callback hell](https://www.scaler.com/topics/callback-hell-in-javascript/#callback-hell) and resume execution after the `yield` statement.
 
 ```js
 const gen = createGenerator();
@@ -21,9 +21,9 @@ function* createGenerator() {
 }
 ```
 
-We can do something like this with promises within the `.then()` callback. We can even leverage the generator's `.throw()` method to have errors thrown when we `.catch()` an error.
+We can do something like this with promises using its `.then()` callback. We can even leverage the generator's `.throw()` method to have errors thrown when we `.catch()` an error, which will allow us to wrap our yielded promises in a try/catch block.
 
-We could take this a step further and write a wrapper for an outer function that handles any `yield`ed promise or callback-style function. Digital Ocean's [Understanding Generators in Javascript](https://www.digitalocean.com/community/tutorials/understanding-generators-in-javascript#async-await-with-generators) article has a good example of this in their `asyncAlt()` implementation.
+We could take this one step further and write a wrapper for an outer function that handles any `yield`ed promise or callback-style function. Digital Ocean's [Understanding Generators in Javascript](https://www.digitalocean.com/community/tutorials/understanding-generators-in-javascript#async-await-with-generators) article has a good example of this in their `asyncAlt()` implementation.
 
 However, this all only seems to work on one level (perhaps we can use `yield*` delegation or pass the top-level generator in to nested functions to remedy this). The bigger limitation here is that it effectively linearalizes our code. Without some event loop, this does clean up our code, but it doesn't give us the benefits of cooperative concurrency.
 
