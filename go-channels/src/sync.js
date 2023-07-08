@@ -15,3 +15,5 @@ module.exports.createMutex = () => {
     }
   };
 };
+
+module.exports.waitGroup = () => {};
